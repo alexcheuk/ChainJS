@@ -1,40 +1,56 @@
-;(function ( $, window, document, undefined ) {
+;(function ( window, document, undefined ) {
 
-	var defaults = {
-		
-	};
+	function ChainJS(){
 
-	var library_name = "lib_data"
-
-	function Library( element, options ){
-		this.handle = $(element);
-		this.options = $.extend(null, defaults, options);
-		this._init();
 	}
 
-	Library.prototype = {
-		_init: function(){
-			
+	ChainJS.prototype = {
+		deferred: function(){
+			return new Deferred();
 		}
 	};
 
-	$.fn.Library = function(method) {
-		if (Library.prototype[method]) {
-			if(!$(this).data('library_name')){
-				console.warn('Element has not been initialized before, initializing with default options.');
-				$(this).Library();
-			}
+	var DEFERRED_STATE_PENDING = "pending";
+	var DEFERRED_STATE_RESOLVED = "resolved";
+	var DEFERRED_STATE_REJECTED = "rejected";
 
-			return $(this).data('library_name')[method].apply($(this).data('library_name'), Array.prototype.slice.call(arguments, 1));
-		} else if (typeof method === 'object' || !method) {
-			return this.each(function() {
-				if ( !$.data( this, "library_name" ) ) {
-						$.data( this, "library_name", new Library( this, method || {} ) );
+	function Deferred(){
+		this._state = DEFERRED_STATE_PENDING;
+	}
+
+	Deferred.prototype = {
+		resolve: function( data ){
+
+		},
+
+		then: function( fn ){
+			if ( typeof fn === "function" ){
+				var fn_result = fn();
+				if ( fn_result instanceof Deferred ){
+					return fn_result;
+				} else {
+					return new Deferred().resolve(fn_result);
 				}
-			});
-		} else {
-			$.error('Method ' + method + ' does not exist on Library');
-		}
-	};
+			}
+		},
 
-})( jQuery, window, document );
+		when: function( fn ){
+
+		},
+
+		done: function( fn ){
+
+		},
+
+		fail: function( fn ){
+
+		},
+
+		always: function( fn ){
+
+		}
+	}
+
+	window.Chain = new ChainJS();
+
+})( window, document );

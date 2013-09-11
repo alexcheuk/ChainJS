@@ -1,8 +1,6 @@
 ;(function ( window, document, undefined ) {
 
-	function ChainJS(){
-
-	}
+	function ChainJS(){}
 
 	ChainJS.prototype = {
 		deferred: function(){
@@ -15,39 +13,35 @@
 	var DEFERRED_STATE_REJECTED = "rejected";
 
 	function Deferred(){
-		this._state = DEFERRED_STATE_PENDING;
-	}
+		var state = DEFERRED_STATE_PENDING;
 
-	Deferred.prototype = {
-		resolve: function( data ){
+		var success_queue = [];
+		var success_queue_index = 0;
+		var success_data = null
 
-		},
+		this.state = function(){
+			return state;
+		}
 
-		then: function( fn ){
-			if ( typeof fn === "function" ){
-				var fn_result = fn();
-				if ( fn_result instanceof Deferred ){
-					return fn_result;
-				} else {
-					return new Deferred().resolve(fn_result);
-				}
+		this.resolve = function( data ){
+			if( state != DEFERRED_STATE_PENDING ) return;
+
+			success_data = data
+			state = DEFERRED_STATE_RESOLVED;
+
+			for( success_queue_index ; success_queue_index < success_queue.length ; success_queue_index++ ){
+				success_queue[success_queue_index](success_data);
 			}
 		},
 
-		when: function( fn ){
+		this.then = function( successFn ){
+			success_queue.push(successFn);
 
-		},
-
-		done: function( fn ){
-
-		},
-
-		fail: function( fn ){
-
-		},
-
-		always: function( fn ){
-
+			if ( state != DEFERRED_STATE_PENDING ) {
+				success_queue[success_queue_index++](success_data);
+			}
+			
+			return this;
 		}
 	}
 
